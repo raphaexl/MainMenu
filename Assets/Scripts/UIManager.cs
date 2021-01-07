@@ -11,6 +11,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 
+#region enums
 public enum UIType
 {
    WelcomeUI,
@@ -43,6 +44,8 @@ public enum GiftItemState
     UNLOCKED,
     GRANTED
 }
+#endregion
+
 [System.Serializable]
 public struct ItemGift{
     public GameObject lockedGO;
@@ -217,14 +220,13 @@ public class UIManager : InternetCheck
             Instance = this;
         }
 
-        uiUser.uiState = UIType.InventoryUI;//For testing 
+        uiUser.uiState = UIType.LobbyUI;//For testing 
         selectedLanguage = LanguageType.English;
         pingTime = -1f;
  
         UpdateUI();
         InvokeRepeating("BatteryLifeUpdate", 1f, 60f);//60s
         InvokeRepeating("InternetIntensityCalc", 1f, 2f);
-       // InvokeRepeating("CheckIntenetReachability", 1f, 2f);
 
         nbSpinItems = 12;
 
@@ -234,6 +236,7 @@ public class UIManager : InternetCheck
 
     private void Start()
     {
+        base.Start();
         LoadPlayerItemsData();
         LoadPlayerSettings();
     }
@@ -244,7 +247,6 @@ public class UIManager : InternetCheck
     #region Check Internet Reachability and overrided methods
     public override void OnConnectionCheckComplete()
     {
-        Debug.Log("What is happening");
         base.OnConnectionCheckComplete();
         if (!base.isConnected)
         {
@@ -1254,7 +1256,6 @@ void Scale(float delta, float speed)
         if (currentGift.state == GiftItemState.UNLOCKED)
         {currentGift.state = GiftItemState.GRANTED;}*/
 
-
         ItemGift currentGift = giftItems[index];
         if (giftItems[index].state == GiftItemState.UNLOCKED)
         { 
@@ -1263,12 +1264,14 @@ void Scale(float delta, float speed)
             if (index == 7)
             {
                 PlayerPrefs.DeleteKey("lastItem");
+                PlayerPrefs.DeleteKey("lastDay");
             }
             else
             {
                 PlayerPrefs.SetInt("lastItem", index);
             }
-        }   
+        }
+        DisplayGiftWindow();
     }
     /*
     void OnGiftWindowShow()
@@ -1292,7 +1295,6 @@ void Scale(float delta, float speed)
         if (Input.GetKeyDown(KeyCode.Space))
         {
             int index = SpinWheel();
-            
         }
     }
 }

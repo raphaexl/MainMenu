@@ -46,7 +46,6 @@ public class InternetCheck : MonoBehaviour
 
     private void ToInvoke()
     {
-        Debug.Log("I'm doing my job");
         if (Continous)
         {
             {
@@ -55,9 +54,8 @@ public class InternetCheck : MonoBehaviour
         }
     }
 
-    private void Start()
+    protected void Start()
     {
-        Debug.Log("Internet reachability ??");
         androidVersion = (Application.platform == RuntimePlatform.Android) ? androidSDK() : 27;
         InvokeRepeating("ToInvoke", 1f, 2f);
     }

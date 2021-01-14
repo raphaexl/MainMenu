@@ -17,6 +17,7 @@ ScriptsOnlyBuild:
     - UnityEngine.UI.Button
     - UnityEngine.UI.CanvasScaler
     - UnityEngine.UI.ContentSizeFitter
+    - UnityEngine.UI.Dropdown
     - UnityEngine.UI.GraphicRaycaster
     - UnityEngine.UI.GridLayoutGroup
     - UnityEngine.UI.HorizontalLayoutGroup
@@ -25,6 +26,7 @@ ScriptsOnlyBuild:
     - UnityEngine.UI.Mask
     - UnityEngine.UI.RawImage
     - UnityEngine.UI.ScrollRect
+    - UnityEngine.UI.Scrollbar
     - UnityEngine.UI.Slider
     - UnityEngine.UI.Text
     - UnityEngine.UI.Toggle
@@ -60,47 +62,51 @@ ScriptsOnlyBuild:
     - Class: 108
       Script: {instanceID: 0}
     - Class: 114
-      Script: {instanceID: 11250}
+      Script: {instanceID: 11248}
+    - Class: 114
+      Script: {instanceID: 11406}
     - Class: 114
       Script: {instanceID: 11408}
     - Class: 114
-      Script: {instanceID: 11448}
+      Script: {instanceID: 11446}
     - Class: 114
-      Script: {instanceID: 11500}
+      Script: {instanceID: 11498}
     - Class: 114
-      Script: {instanceID: 11548}
+      Script: {instanceID: 11546}
     - Class: 114
-      Script: {instanceID: 11564}
+      Script: {instanceID: 11562}
     - Class: 114
-      Script: {instanceID: 11746}
+      Script: {instanceID: 11744}
     - Class: 114
-      Script: {instanceID: 11834}
+      Script: {instanceID: 11832}
     - Class: 114
-      Script: {instanceID: 12028}
+      Script: {instanceID: 12026}
     - Class: 114
-      Script: {instanceID: 12082}
+      Script: {instanceID: 12080}
     - Class: 114
-      Script: {instanceID: 12146}
+      Script: {instanceID: 12144}
     - Class: 114
-      Script: {instanceID: 12224}
+      Script: {instanceID: 12222}
     - Class: 114
-      Script: {instanceID: 12246}
+      Script: {instanceID: 12244}
     - Class: 114
-      Script: {instanceID: 12316}
+      Script: {instanceID: 12314}
     - Class: 114
-      Script: {instanceID: 12440}
+      Script: {instanceID: 12438}
     - Class: 114
-      Script: {instanceID: 12702}
+      Script: {instanceID: 12700}
     - Class: 114
-      Script: {instanceID: 12998}
+      Script: {instanceID: 12996}
     - Class: 114
-      Script: {instanceID: 13016}
+      Script: {instanceID: 13014}
     - Class: 114
-      Script: {instanceID: 13054}
+      Script: {instanceID: 13040}
     - Class: 114
-      Script: {instanceID: 13068}
+      Script: {instanceID: 13052}
     - Class: 114
-      Script: {instanceID: 13084}
+      Script: {instanceID: 13066}
+    - Class: 114
+      Script: {instanceID: 13082}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
@@ -494,7 +500,7 @@ ScriptsOnlyBuild:
     className: Outline
   - hash:
       serializedVersion: 2
-      Hash: 97e77d44cb17cb071365c47ea1c26614
+      Hash: b48a3ae070ac5d62e44dbf0260b3156a
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: UIManager
@@ -567,4 +573,4 @@ ScriptsOnlyBuild:
   platform: 13
   scenePathNames:
   - Assets/Scenes/MainMenu.unity
-  playerPath: C:/Users/rapha/Documents/Unity/DevDreamStudio/MainMenu/MainMenu/Builds/menuSystem.apk
+  playerPath: C:/Users/1337/Documents/Devdream/MainMenu/Builds/menuSystem.apk

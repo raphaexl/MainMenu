@@ -60,9 +60,6 @@ public struct UiUser
     public LanguageType language;
     public UIType uiState;
     public ShopType shopOption;
-    public float musicVolume;
-    public float soundEffectVolume;
-    public float voiceVolume;
     public int currentItemIndex;
     public int currentOptionIndex;
 }
@@ -70,7 +67,7 @@ public struct UiUser
 public class UIManager : InternetCheck
 {
     //UI Element
-    
+
     //Needeed Data
     [SerializeField] Sprite[] uiUserProfileAvatarSprites;
     [SerializeField] Sprite[] uiUserProfileRankSprites;
@@ -87,17 +84,13 @@ public class UIManager : InternetCheck
     [SerializeField] Image internetIntensity;
 
     //UI Setting State Elements
-    // ---- Audio Volumes
-    [SerializeField] Text musicVolumeText;
-    [SerializeField] Text soundEffectVolumeText;
-    [SerializeField] Text voiceVolumeText;
 
     //UI Inventory Elements
     [SerializeField] List<GameObject> inventoryItems;
     [SerializeField] GameObject inventoryItemDefault;
     [SerializeField] GameObject inventoryItemOptionContainer;
     [SerializeField] GameObject inventoryItemOption;
-    
+
     //List the option For each item
     List<GameObject> aircraftOptions;
     List<GameObject> canonOptions;
@@ -116,10 +109,10 @@ public class UIManager : InternetCheck
     [SerializeField] Sprite optionDefaultSprite;
     [SerializeField] Sprite optionSelectedSprite;
 
-   
+
 
     [SerializeField] Text itemOptionTitle;
-    
+
     [SerializeField] GameObject[] aircraftModels;
     [SerializeField] GameObject[] canonModels;
     [SerializeField] GameObject[] missileModels;
@@ -166,11 +159,73 @@ public class UIManager : InternetCheck
     [Header("Settings      Window Panel")]
     [SerializeField] GameObject settingsPanel;
     [SerializeField] GameObject settingsDefaultPanel;
+    [SerializeField] Sprite settingOptionSelectedSprite;
+    [SerializeField] Sprite[] settingOptionDefaultSprite;
+    [SerializeField] GameObject[] settingOptions;
+
+    [SerializeField] GameObject mainSettingsWindow;
+    [SerializeField] GameObject facebookIco;
+    [SerializeField] GameObject guestIco;
+    [SerializeField] Text accountText;
+    [SerializeField] Toggle[] mainSettingsToggle;
+    [SerializeField] Text cameraSettingFovText;
+    [SerializeField] Slider cameraSettingFovSlider;
+    [SerializeField] Dropdown langageDropDown;
+    [SerializeField] Dropdown serverDropDown;
+
+    [SerializeField] GameObject graphicsWindow;
+    [SerializeField] Sprite graphicsDisplaySelectedSprite;
+    [SerializeField] Sprite[] graphicsDisplayDefaultSprite;
+    [SerializeField] GameObject[] graphicsDisplays;
+    [SerializeField] Sprite graphicsFpsSelectedSprite;
+    [SerializeField] Sprite[] graphicsFpsDefaultSprite;
+    [SerializeField] GameObject[] graphicsFps;
+    [SerializeField] Sprite graphicsStyleSelectedSprite;
+    [SerializeField] Sprite[] graphicsStyleDefaultSprite;
+    [SerializeField] GameObject[] graphicsStyle;
+    [SerializeField] Toggle graphicShadowToggle;
+    [SerializeField] Slider graphicBrightnessSlider;
+    [SerializeField] Text graphicBrightnessText;
+    private bool settingBtnHeld = false;
     [SerializeField] GameObject controlsWindow;
-    [SerializeField] GameObject videoWindow;
+    [SerializeField] GameObject controlsDefaultWindow;
+    [SerializeField] GameObject[] controlsOptions;
+    [SerializeField] Sprite controlsOptionSelectedSprite;// Sprite
+    [SerializeField] Sprite[] controlsOptionDefaultSprites;
+    [SerializeField] GameObject controlsAccJoysWindow;
+    [SerializeField] GameObject[] controlsAccJoysItems;
+    GameObject controlsAccJoysSelected;
+    [SerializeField] Sprite[] controlsAccJoysDefaultSprites;
+    [SerializeField] Sprite controlsAccJoysSelectedSprite;
+    [SerializeField] Slider contolsAccJoysScaleSlider;
+    [SerializeField] Slider contolsAccJoysTransparencySlider;
+    [SerializeField] Text contolsAccJoysScaleText;
+    [SerializeField] Text contolsAccJoysTransparencyText;
+    Vector3[] controlsAccJoysItemsPositions;
+    Quaternion[] controlsAccJoysItemsRotations;
+    Vector3[] controlsAccJoysItemsScales;
+    float[] controlsAccJoysItemsTransparency;
+    bool controlAccelerometerState;
+
+    
+
+
     [SerializeField] GameObject audioWindow;
+    [SerializeField] Slider musicVolumeSlider;
+    [SerializeField] Text musicVolumeText;
+    [SerializeField] Slider soundEffectVolumeSlider;
+    [SerializeField] Text soundEffectVolumeText;
+    [SerializeField] Slider voiceVolumeSlider;
+    [SerializeField] Text voiceVolumeText;
+    [SerializeField] Slider uiSoundVolumeSlider;
+    [SerializeField] Text uiSoundVolumeText;
+    [SerializeField] Slider masterVolumeSlider;
+    [SerializeField] Text masterVolumeText;
+    [SerializeField] Slider microVolumeSlider;
+    [SerializeField] Text microVolumeText;
+
     [SerializeField] GameObject gamePlayWindow;
-    [SerializeField] GameObject othersWindow;
+
     [Header("Chop      Window Panel")]
     [SerializeField] GameObject chopPanel;
     [Header("Map Selection      Window Panel")]
@@ -220,7 +275,7 @@ public class UIManager : InternetCheck
             Instance = this;
         }
 
-        uiUser.uiState = UIType.LobbyUI;//For testing 
+        uiUser.uiState = UIType.SettingUI;//For testing 
         selectedLanguage = LanguageType.English;
         pingTime = -1f;
  
@@ -230,7 +285,7 @@ public class UIManager : InternetCheck
 
         nbSpinItems = 12;
 
-        PlayerPrefs.DeleteAll();
+        //PlayerPrefs.DeleteAll();
         UpdateItemState();
     }
 
@@ -238,7 +293,6 @@ public class UIManager : InternetCheck
     {
         base.Start();
         LoadPlayerItemsData();
-        LoadPlayerSettings();
     }
 
    
@@ -336,19 +390,6 @@ public class UIManager : InternetCheck
     }
     #endregion
 
-    #region Load User PlayPrefs Here
-    public void LoadPlayerSettings()
-    {
-        uiUser.musicVolume = PlayerPrefs.GetFloat("musicVolume", .50f);
-        uiUser.soundEffectVolume = PlayerPrefs.GetFloat("soundEffectVolume", .50f);
-        uiUser.voiceVolume = PlayerPrefs.GetFloat("voiceVolume", .50f);
-        ///And Any Other Settings
-
-        musicVolumeText.text = (uiUser.musicVolume * 100).ToString("0");
-        soundEffectVolumeText.text = (uiUser.soundEffectVolume * 100).ToString("0");
-        voiceVolumeText.text = (uiUser.voiceVolume * 100).ToString("0");
-    }
-    #endregion
 
     #region Load Inventroy Data
 
@@ -505,7 +546,7 @@ public class UIManager : InternetCheck
         SetInventorySelectedItem(0);
         inventoryItemOption.SetActive(false);
         //For testing we need Reset PlayerPrefs 
-        PlayerPrefs.DeleteAll();
+        //PlayerPrefs.DeleteAll();
         //Remove the line above !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         uiUser.currentItemIndex = 0;
         uiUser.currentOptionIndex = 0;
@@ -569,11 +610,14 @@ public class UIManager : InternetCheck
                 {
                     settingsPanel.SetActive(true);
                     settingsDefaultPanel.SetActive(true);
-                    controlsWindow.SetActive(true);
-                    videoWindow.SetActive(false);
+                    mainSettingsWindow.SetActive(true);
+                    graphicsWindow.SetActive(false);
+                    controlsWindow.SetActive(false);
                     audioWindow.SetActive(false);
                     gamePlayWindow.SetActive(false);
-                    othersWindow.SetActive(false);
+                    DisplaySettingMainSetting();
+                    SettingOptionClear();
+                    settingOptions[0].GetComponent<Button>().image.sprite = settingOptionSelectedSprite;
                 }
                 break;
             case UIType.InventoryUI:
@@ -749,39 +793,56 @@ public class UIManager : InternetCheck
 
     #region Settings Button and Sliders
 
-    public void OnSettingSelectedUpdate()
+    void SettingOptionClear()
     {
-        controlsWindow.SetActive(false);
-        videoWindow.SetActive(false);
-        audioWindow.SetActive(false);
-        gamePlayWindow.SetActive(false);
-        othersWindow.SetActive(false);
+        for (int i = settingOptions.Length - 1; i >= 0; i--)
+        {
+            settingOptions[i].GetComponent<Button>().image.sprite = settingOptionDefaultSprite[i];
+        }
     }
 
-    public void OnSettingsControlBtnPressed()
+    void OnSettingSelectedUpdate()
     {
-        OnSettingSelectedUpdate();
-        controlsWindow.SetActive(true);
+        mainSettingsWindow.SetActive(false);
+        controlsWindow.SetActive(false);
+        graphicsWindow.SetActive(false);
+        audioWindow.SetActive(false);
+        gamePlayWindow.SetActive(false);
+        SettingOptionClear();
     }
-    public void OnSettingsVideoBtnPressed()
+    public void OnSettingsOptionsBtnPressed(int index)
     {
         OnSettingSelectedUpdate();
-        videoWindow.SetActive(true);
-    }
-    public void OnSettingsAudioBtnPressed()
-    {
-        OnSettingSelectedUpdate();
-        audioWindow.SetActive(true);
-    }
-    public void OnSettingsGamePlayBtnPressed()
-    {
-        OnSettingSelectedUpdate();
-        gamePlayWindow.SetActive(true);
-    }
-    public void OnSettingsOthersBtnPressed()
-    {
-        OnSettingSelectedUpdate();
-        othersWindow.SetActive(true);
+        switch (index)
+        {
+            case 0:
+                {
+                    DisplaySettingMainSetting();
+                }
+                break;
+            case 1:
+                {
+                    DisplaySettingGraphics();
+                }
+                break;
+            case 2:
+                {
+                    DisplaySettingControls();
+                }
+                break;
+            case 3:
+                {
+                    DisplaySettingAudio();
+                }
+                break;
+            case 4:
+                {
+                    DisplaySettingGamePlay();
+                }
+                break;
+            default: break;
+        }
+        settingOptions[index].GetComponent<Button>().image.sprite = settingOptionSelectedSprite;
     }
 
     public void OnSettingsWindowClose()
@@ -790,21 +851,539 @@ public class UIManager : InternetCheck
         UpdateUI();
     }
 
+    public void OnSettingsBtnHelpUp()
+    {
+        settingBtnHeld = false;
+    }
+
+    #region Settings Main Settings
+    public void OnSettingMainSettingToogle(int index)
+    {
+        PlayerPrefs.SetInt("mainSettingsToggle" + index.ToString(), mainSettingsToggle[index].isOn ? 1 : 0);
+    }
+
+    public void OnSettingsMainSettingCameraFovChanged(float value)
+    {
+        PlayerPrefs.SetFloat("CameraSettingFov", value * 180);
+        cameraSettingFovText.text = (value * 180).ToString("0");
+    }
+
+    public void OnSettingsMainSettingCameraFovPlus()
+    {
+        float value = PlayerPrefs.GetFloat("CameraSettingFov", 170);
+        settingBtnHeld = true;
+        StartCoroutine(SliderTextCoroutine("CameraSettingFov",  cameraSettingFovSlider, cameraSettingFovText, value, +2));
+    }
+
+    public void OnSettingsMainSettingCameraFovMinus()
+    {
+        float value = PlayerPrefs.GetFloat("CameraSettingFov", 170);
+        settingBtnHeld = true;
+        StartCoroutine(SliderTextCoroutine("CameraSettingFov",  cameraSettingFovSlider, cameraSettingFovText, value, -2));
+    }
+
+    public void OnSettingMainSettingLanguageDropdownChange(int value)
+    {
+        langageDropDown.value = value;
+        PlayerPrefs.SetInt("CountryLanguage", value);
+    }
+
+    public void OnSettingMainSettingServerDropdownChange(int value)
+    {
+        serverDropDown.value = value;
+        PlayerPrefs.SetInt("Server", value);
+    }
+
+    void mainSettingBestServer()
+    {
+        int choosenServer = PlayerPrefs.GetInt("Server", 0);
+    }
+
+    void DisplaySettingMainSetting()
+    {
+        mainSettingsWindow.SetActive(true);
+        String accountType = PlayerPrefs.GetString("accountType", "Guest");
+        if (accountType == "Facebook")
+        {
+            facebookIco.SetActive(true);
+            guestIco.SetActive(false);
+            accountText.text = "Facebook";
+        }else if (accountType == "Guest")
+        {
+            guestIco.SetActive(true);
+            facebookIco.SetActive(false);
+            accountText.text = "Guest";
+        }
+
+        for (int i = mainSettingsToggle.Length - 1; i >= 0; i--)
+        {
+            mainSettingsToggle[i].isOn = PlayerPrefs.GetInt("mainSettingsToggle" + i.ToString(), 0) == 1;
+        }
+        float cameraSettingFov = PlayerPrefs.GetFloat("CameraSettingFov", 170);
+        cameraSettingFovText.text = cameraSettingFov.ToString("0");
+        cameraSettingFovSlider.value = cameraSettingFov / 180;
+
+        langageDropDown.value = PlayerPrefs.GetInt("CountryLanguage", 0);
+
+        int choosenServer = PlayerPrefs.GetInt("Server", 0);
+        serverDropDown.value = choosenServer;
+        //serverDropDown.options[choosenServer].text = choosenServer.ToString();
+    }
+    #endregion
+   
+    IEnumerator SliderTextCoroutine(string str, Slider slider, Text textdisplay, float value, float step)
+    {
+        while (settingBtnHeld)
+        {
+            value += step;
+            value = Mathf.Clamp(value, 0, 100);
+            slider.value = value / 100;
+            textdisplay.text = (value).ToString("0");
+            yield return new WaitForSeconds(0.1f);
+        }
+        PlayerPrefs.SetFloat(str, value);
+    }
+
+    #region Settings Graphics Setting
+    public void OnSettingGraphicsDisplayBtn(int index)
+    {
+        for (int i = graphicsDisplays.Length - 1; i >= 0; i--)
+        {
+            graphicsDisplays[i].GetComponent<Button>().image.sprite = graphicsDisplayDefaultSprite[i];
+        }
+        graphicsDisplays[index].GetComponent<Button>().image.sprite = graphicsDisplaySelectedSprite;
+        PlayerPrefs.SetInt("GraphicDisplay", index);
+    }
+
+    public void OnSettingGraphicsFpsBtn(int index)
+    {
+        for (int i = graphicsFps.Length - 1; i >= 0; i--)
+        {
+            graphicsFps[i].GetComponent<Button>().image.sprite = graphicsFpsDefaultSprite[i];
+        }
+        graphicsFps[index].GetComponent<Button>().image.sprite = graphicsFpsSelectedSprite;
+        PlayerPrefs.SetInt("GraphicFps", index);
+    }
+
+    public void OnSettingGraphicsStyleBtn(int index)
+    {
+        for (int i = graphicsStyle.Length - 1; i >= 0; i--)
+        {
+            graphicsStyle[i].GetComponent<Button>().image.sprite = graphicsStyleDefaultSprite[i];
+        }
+        graphicsStyle[index].GetComponent<Button>().image.sprite = graphicsStyleSelectedSprite;
+        PlayerPrefs.SetInt("GraphicStyle", index);
+    }
+
+    public void OnSettingGraphicsShadow()
+    {
+        PlayerPrefs.SetInt("GraphicShadow", graphicShadowToggle.isOn ? 1 : 0);
+    }
+
+    public void OnSettingsGraphicBrightnessChanged(float value)
+    {
+        PlayerPrefs.SetFloat("GraphicBrightness", value * 100);
+        settingBtnHeld = true;
+        graphicBrightnessText.text = (value * 100).ToString("0");
+    }
+
+    public void OnSettingsGraphicBrightnessPlus()
+    {
+        float value = PlayerPrefs.GetFloat("GraphicBrightness", 100);
+        settingBtnHeld = true;
+        StartCoroutine(SliderTextCoroutine("GraphicBrightness", graphicBrightnessSlider, graphicBrightnessText, value, +2));
+    }
+
+    public void OnSettingsGraphicBrightnessMinus()
+    {
+        float value = PlayerPrefs.GetFloat("GraphicBrightness", 100);
+        settingBtnHeld = true;
+        StartCoroutine(SliderTextCoroutine("GraphicBrightness", graphicBrightnessSlider, graphicBrightnessText, value, -2));
+    }
+
+
+    void DisplaySettingGraphics()
+    {
+        graphicsWindow.SetActive(true);
+        int displayIndex = PlayerPrefs.GetInt("GraphicDisplay", 1);
+        graphicsDisplays[displayIndex].GetComponent<Button>().image.sprite = graphicsDisplaySelectedSprite;
+        int fpsIndex = PlayerPrefs.GetInt("GraphicFps", 1);
+        graphicsFps[fpsIndex].GetComponent<Button>().image.sprite = graphicsDisplaySelectedSprite;
+        int styleIndex = PlayerPrefs.GetInt("GraphicStyle", 0);
+        graphicsStyle[styleIndex].GetComponent<Button>().image.sprite = graphicsStyleSelectedSprite;
+        graphicShadowToggle.isOn = PlayerPrefs.GetInt("GraphicShadow", 1) == 1;
+
+        float brightness = PlayerPrefs.GetFloat("GraphicBrightness", 100);
+        graphicBrightnessText.text = brightness.ToString("0");
+        graphicBrightnessSlider.value = brightness / 100;
+    }
+    #endregion
+
+
+    #region Settings Control Setting
+    public void OnControlOptionSelectedBtn(int index)
+    {
+        for (int i = controlsOptions.Length - 1; i >= 0; i--)
+        {
+            controlsOptions[i].transform.GetChild(2).gameObject.SetActive(false);
+            controlsOptions[i].transform.GetChild(1).gameObject.GetComponent<Image>().sprite = controlsOptionDefaultSprites[i];
+        }
+        controlsOptions[index].transform.GetChild(2).gameObject.SetActive(true);
+        controlsOptions[index].transform.GetChild(1).gameObject.GetComponent<Image>().sprite = controlsOptionSelectedSprite;
+    }
+
+    public void OnControlAccJoysScaleChange(float value)
+    {
+        float scale = value;
+        scale = Mathf.Clamp(scale, 0.5f, 1f);
+        controlsAccJoysSelected.transform.localScale = Vector3.one * scale;
+        contolsAccJoysScaleText.text = ((scale) * 100).ToString("0");
+    }
+
+    public void OnControlAccJoysTransparencyChange(float value)
+    {
+        Color color = controlsAccJoysSelected.GetComponent<Image>().color;
+        controlsAccJoysSelected.GetComponent<Image>().color = new Color(color.r, color.g, color.b, value);
+        contolsAccJoysTransparencyText.text = (value * 100).ToString("0");
+    }
+
+    public void OnControlAccJoysItemUpdate(int index)
+    {
+        for(int i = controlsAccJoysItems.Length - 1; i >= 0; i--)
+        {
+            controlsAccJoysItems[i].GetComponent<Image>().sprite = controlsAccJoysDefaultSprites[i];
+        }
+        controlsAccJoysSelected = controlsAccJoysItems[index];
+        controlsAccJoysSelected.GetComponent<Image>().sprite = controlsAccJoysSelectedSprite;
+    }
+
+    public void OnControlAccJoysItemSelectedBtn(int index)
+    {
+        OnControlAccJoysItemUpdate(index);
+        contolsAccJoysScaleSlider.value = controlsAccJoysSelected.transform.localScale.x;
+        contolsAccJoysTransparencySlider.value = controlsAccJoysSelected.GetComponent<Image>().color.a;
+        contolsAccJoysScaleText.text = (controlsAccJoysSelected.transform.localScale.x * 100).ToString("0");
+        contolsAccJoysTransparencyText.text = (controlsAccJoysSelected.GetComponent<Image>().color.a * 100).ToString("0");
+    }
+
+    public void OnControlAccJoysExitBtn()
+    {
+        controlsAccJoysWindow.SetActive(false);
+        controlsDefaultWindow.SetActive(true);
+        controlsAccJoysSelected = null;
+    }
+
+    void LoadAccJoysItemsSettings()
+    {
+        Vector3 pos;
+        float scale;
+        float brightness;
+        string str;
+
+        for (int i = controlsAccJoysItems.Length - 1; i >= 0; i--)
+        {
+            if (PlayerPrefs.HasKey("ControlAccJoysItem" + i.ToString()))
+            {
+                str = PlayerPrefs.GetString("ControlAccJoysItem" + i.ToString());
+                string[] itemParam = str.Split(';');
+                pos.x = float.Parse(itemParam[0]);
+                pos.y = float.Parse(itemParam[1]);
+                pos.z = float.Parse(itemParam[2]);
+                scale = float.Parse(itemParam[3]);
+                brightness = float.Parse(itemParam[4]);
+                controlsAccJoysItems[i].transform.position = pos;
+                controlsAccJoysItems[i].transform.localScale = Vector3.one * scale;
+                Color color = controlsAccJoysItems[i].GetComponent<Image>().color;
+                controlsAccJoysItems[i].GetComponent<Image>().color = new Color(color.r, color.g, color.b, brightness);
+            }
+        }
+    }
+
+    public void OnControlAccJoysSaveBtn()
+    {
+        Vector3 pos;
+        float scale;
+        float brightness;
+        string str;
+
+        for (int i = controlsAccJoysItems.Length - 1; i >= 0; i--)
+        {
+            pos = controlsAccJoysItems[i].transform.position;
+            scale = controlsAccJoysItems[i].transform.localScale.x;
+            brightness = controlsAccJoysItems[i].GetComponent<Image>().color.a;
+            str = String.Format("{0};{1};{2};{3};{4}", pos.x, pos.y, pos.z, scale, brightness);
+
+            PlayerPrefs.SetString("ControlAccJoysItem" + i.ToString(), str);
+        }
+    }
+
+    public void OnControlAccJoysResetBtn()
+    {
+        if (controlsAccJoysItemsPositions != null)
+        {
+            for (int i = controlsAccJoysItems.Length - 1; i >= 0; i--)
+            {
+                controlsAccJoysItems[i].transform.position = controlsAccJoysItemsPositions[i];
+                controlsAccJoysItems[i].transform.localScale = controlsAccJoysItemsScales[i];
+                controlsAccJoysItems[i].transform.rotation = controlsAccJoysItemsRotations[i];
+                Color color = controlsAccJoysItems[i].GetComponent<Image>().color;
+                float alpha = controlsAccJoysItemsTransparency[i];
+            }
+            OnControlAccJoysItemSelectedBtn(0);
+        }
+    }
+
+    public void OnControlDraggingAccJoysItems(BaseEventData bed)
+    {
+        PointerEventData ped = bed as PointerEventData;
+
+        if (!OnScalingControlAccJoysItems())
+        {
+            controlsAccJoysSelected.transform.position = ped.position;
+        }
+    }
+
+    public void OnControlPointerDownAccJoysItems(int index)
+    {
+        OnControlAccJoysItemSelectedBtn(index);
+    }
+
+    bool OnScalingControlAccJoysItems()
+    {
+        if (Input.touchCount < 2)
+        {
+            return false;
+        }
+        Touch tZero = Input.GetTouch(0);
+        Touch tOne = Input.GetTouch(1);
+
+        Vector2 tZeroPrevious = tZero.position - tZero.deltaPosition;
+        Vector2 tOnePrevious = tOne.position - tOne.deltaPosition;
+        float oldTouchDistance = Vector2.Distance(tZeroPrevious, tOnePrevious);
+        float currentTouchDistance = Vector2.Distance(tZero.position, tOne.position);
+        float deltaDistance = oldTouchDistance - currentTouchDistance;
+        float speed = scaleSpeed;
+        controlsAccJoysSelected.transform.localScale -= Vector3.one * deltaDistance * speed * Time.deltaTime;
+        controlsAccJoysSelected.transform.localScale = new Vector3(Mathf.Clamp(controlsAccJoysSelected.transform.localScale.x, 0.1f, 1.0f),
+            Mathf.Clamp(controlsAccJoysSelected.transform.localScale.y, 0.5f, 1.0f),
+            controlsAccJoysSelected.transform.localScale.z);
+        float newScale = controlsAccJoysSelected.transform.localScale.x;
+        OnControlAccJoysScaleChange(newScale);
+        return true;
+    }
+
+    public void OnControlOptionCustomizeBtn(int index)
+    {
+        controlsDefaultWindow.SetActive(false);
+        controlsAccJoysWindow.SetActive(true);
+        OnControlAccJoysItemUpdate(0);
+        controlAccelerometerState = index == 0;
+        
+        //The first time
+     
+        if (controlsAccJoysItemsPositions == null)
+        {
+            controlsAccJoysItemsPositions = new Vector3[controlsAccJoysItems.Length];
+            controlsAccJoysItemsRotations = new Quaternion[controlsAccJoysItems.Length];
+            controlsAccJoysItemsScales = new Vector3[controlsAccJoysItems.Length];
+            controlsAccJoysItemsTransparency = new float[controlsAccJoysItems.Length];
+    
+            for (int i = controlsAccJoysItems.Length - 1; i >= 0; i--)
+            {
+                Vector3 position = new Vector3(controlsAccJoysItems[i].transform.position.x,
+                    controlsAccJoysItems[i].transform.position.y,
+                    controlsAccJoysItems[i].transform.position.z);
+                Quaternion rotation = new Quaternion(controlsAccJoysItems[i].transform.rotation.x,
+                    controlsAccJoysItems[i].transform.rotation.y, controlsAccJoysItems[i].transform.rotation.z, controlsAccJoysItems[i].transform.rotation.w);
+                Vector3 scale = new Vector3(controlsAccJoysItems[i].transform.localScale.x,
+                    controlsAccJoysItems[i].transform.localScale.y,
+                    controlsAccJoysItems[i].transform.localScale.z);
+                controlsAccJoysItemsPositions[i] = position;
+                controlsAccJoysItemsRotations[i] = rotation;
+                controlsAccJoysItemsScales[i] = scale;
+                controlsAccJoysItemsTransparency[i] = controlsAccJoysItems[i].GetComponent<Image>().color.a;
+            }
+        }
+
+        LoadAccJoysItemsSettings();
+        if (!controlAccelerometerState)
+        {
+            controlsAccJoysItems[0].SetActive(false);
+            controlsAccJoysSelected = controlsAccJoysItems[1];
+        }
+        else
+        {
+            controlsAccJoysItems[0].SetActive(true);
+            controlsAccJoysSelected = controlsAccJoysItems[0];
+        }
+        controlsAccJoysSelected.GetComponent<Image>().sprite = controlsAccJoysSelectedSprite;
+        contolsAccJoysScaleSlider.value = controlsAccJoysSelected.transform.localScale.x;
+        contolsAccJoysTransparencySlider.value = controlsAccJoysSelected.GetComponent<Image>().color.a;
+        contolsAccJoysScaleText.text = (controlsAccJoysSelected.transform.localScale.x * 100).ToString("0"); // >
+        contolsAccJoysTransparencyText.text = (controlsAccJoysSelected.GetComponent<Image>().color.a * 100).ToString("0");
+    }
+
+
+    void DisplaySettingControls()
+    {
+        controlsWindow.SetActive(true);
+        controlsDefaultWindow.SetActive(true);
+        int lastCustomizeIndex = PlayerPrefs.GetInt("lastControlCustomized", 0);
+        OnControlOptionSelectedBtn(lastCustomizeIndex);
+    }
+
+    #endregion
+
+    #region Settings GamePlay Setting
+    void DisplaySettingGamePlay()
+    {
+        gamePlayWindow.SetActive(true);
+    }
+    #endregion
+
+    #region Settings : Music
+    void DisplaySettingAudio()
+    {
+        audioWindow.SetActive(true);
+
+        float value = PlayerPrefs.GetFloat("MusicVolume", 50);
+        musicVolumeText.text = value.ToString("0");
+        musicVolumeSlider.value = value / 100;
+        value = PlayerPrefs.GetFloat("SoundEffectVolume", 50);
+        soundEffectVolumeText.text = value.ToString("0");
+        soundEffectVolumeSlider.value = value / 100;
+        value = PlayerPrefs.GetFloat("VoiceVolume", 50);
+        voiceVolumeText.text = value.ToString("0");
+        voiceVolumeSlider.value = value / 100;
+        value = PlayerPrefs.GetFloat("UiSoundVolume", 50);
+        uiSoundVolumeText.text = value.ToString("0");
+        uiSoundVolumeSlider.value = value / 100;
+        value = PlayerPrefs.GetFloat("MasterVolume", 50);
+        masterVolumeText.text = value.ToString("0");
+        masterVolumeSlider.value = value / 100;
+        value = PlayerPrefs.GetFloat("MicroVolume", 50);
+        microVolumeText.text = value.ToString("0");
+        microVolumeSlider.value = value / 100;
+    }
+    public void OnSettingsMusicVolumePlus()
+    {
+        float value = PlayerPrefs.GetFloat("MusicVolume", 100);
+        settingBtnHeld = true;
+        StartCoroutine(SliderTextCoroutine("MusicVolume", musicVolumeSlider, musicVolumeText, value, +2));
+    }
+
+    public void OnSettingsMusicVolumeMinus()
+    {
+        float value = PlayerPrefs.GetFloat("MusicVolume", 100);
+        settingBtnHeld = true;
+        StartCoroutine(SliderTextCoroutine("MusicVolume", musicVolumeSlider, musicVolumeText, value, -2));
+    }
+
     public void OnSettingMusicVolumeChange(float value)
     {
-        uiUser.musicVolume = value;
+        PlayerPrefs.SetFloat("MusicVolume", value * 100);
         musicVolumeText.text = (value * 100).ToString("0");
     }
+
+    public void OnSettingsSoundEffectVolumePlus()
+    {
+        float value = PlayerPrefs.GetFloat("SoundEffectVolume", 100);
+        settingBtnHeld = true;
+        StartCoroutine(SliderTextCoroutine("SoundEffectVolume", soundEffectVolumeSlider, soundEffectVolumeText, value, +2));
+    }
+
+    public void OnSettingsSoundEffectVolumeMinus()
+    {
+        float value = PlayerPrefs.GetFloat("SoundEffectVolume", 100);
+        settingBtnHeld = true;
+        StartCoroutine(SliderTextCoroutine("SoundEffectVolume", soundEffectVolumeSlider, soundEffectVolumeText, value, -2));
+    }
+
     public void OnSettingSoundEffectVolumeChange(float value)
     {
-        uiUser.soundEffectVolume = value;
+        PlayerPrefs.SetFloat("SoundEffectVolume", value * 100);
         soundEffectVolumeText.text = (value * 100).ToString("0");
     }
+
+    public void OnSettingsVoiceVolumePlus()
+    {
+        float value = PlayerPrefs.GetFloat("VoiceVolume", 100);
+        settingBtnHeld = true;
+        StartCoroutine(SliderTextCoroutine("VoiceVolume", voiceVolumeSlider, voiceVolumeText, value, +2));
+    }
+
+    public void OnSettingsVoiceVolumeMinus()
+    {
+        float value = PlayerPrefs.GetFloat("VoiceVolume", 100);
+        settingBtnHeld = true;
+        StartCoroutine(SliderTextCoroutine("VoiceVolume", voiceVolumeSlider, voiceVolumeText, value, -2));
+    }
+
     public void OnSettingVoiceVolumeChange(float value)
     {
-        uiUser.voiceVolume = value;
+        PlayerPrefs.SetFloat("VoiceVolume", value * 100);
         voiceVolumeText.text = (value * 100).ToString("0");
     }
+    public void OnSettingsUiSoundVolumePlus()
+    {
+        float value = PlayerPrefs.GetFloat("UiSoundVolume", 100);
+        settingBtnHeld = true;
+        StartCoroutine(SliderTextCoroutine("UiSoundVolume", uiSoundVolumeSlider, uiSoundVolumeText, value, +2));
+    }
+
+    public void OnSettingsUiSoundVolumeMinus()
+    {
+        float value = PlayerPrefs.GetFloat("UiSoundVolume", 100);
+        settingBtnHeld = true;
+        StartCoroutine(SliderTextCoroutine("UiSoundVolume", uiSoundVolumeSlider, uiSoundVolumeText, value, -2));
+    }
+
+    public void OnSettingUiSoundVolumeChange(float value)
+    {
+        PlayerPrefs.SetFloat("UiSoundVolume", value * 100);
+        uiSoundVolumeText.text = (value * 100).ToString("0");
+    }
+
+    public void OnSettingsMasterVolumePlus()
+    {
+        float value = PlayerPrefs.GetFloat("MasterVolume", 100);
+        settingBtnHeld = true;
+        StartCoroutine(SliderTextCoroutine("MasterVolume", masterVolumeSlider, masterVolumeText, value, +2));
+    }
+
+    public void OnSettingsMasterVolumeMinus()
+    {
+        float value = PlayerPrefs.GetFloat("MaterVolume", 100);
+        settingBtnHeld = true;
+        StartCoroutine(SliderTextCoroutine("MasterVolume", masterVolumeSlider, masterVolumeText, value, -2));
+    }
+
+    public void OnSettingMasterVolumeChange(float value)
+    {
+        PlayerPrefs.SetFloat("MasterVolume", value * 100);
+        masterVolumeText.text = (value * 100).ToString("0");
+    }
+
+    public void OnSettingsMicroVolumePlus()
+    {
+        float value = PlayerPrefs.GetFloat("MicroVolume", 100);
+        settingBtnHeld = true;
+        StartCoroutine(SliderTextCoroutine("MicroVolume", microVolumeSlider, microVolumeText, value, +2));
+    }
+
+    public void OnSettingsMicroVolumeMinus()
+    {
+        float value = PlayerPrefs.GetFloat("MicroVolume", 100);
+        settingBtnHeld = true;
+        StartCoroutine(SliderTextCoroutine("MicroVolume", microVolumeSlider, microVolumeText, value, -2));
+    }
+    
+    public void OnSettingMicroVolumeChange(float value)
+    {
+        PlayerPrefs.SetFloat("MicroVolume", value * 100);
+        microVolumeText.text = (value * 100).ToString("0");
+    }
+    #endregion
     #endregion
 
     #region Inventory Buttons
@@ -1273,28 +1852,19 @@ void Scale(float delta, float speed)
         }
         DisplayGiftWindow();
     }
-    /*
-    void OnGiftWindowShow()
-    {
-        giftWindowGO.SetActive(true);
-    }
 
-    public void OnGiftWindowHide()
-    {
-        giftWindowGO.SetActive(false);
-    }
-    */
     #endregion
 
     private void Update()
     {
-        if (uiUser.uiState == UIType.InventoryUI)
+        if (uiUser.uiState == UIType.SettingUI)
         {
-            { UpdateEvents(); }         
-        }
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            int index = SpinWheel();
+            if (controlsAccJoysSelected)
+            {
+                OnScalingControlAccJoysItems();
+            }
         }
     }
+
+
 }

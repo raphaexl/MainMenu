@@ -500,7 +500,7 @@ ScriptsOnlyBuild:
     className: Outline
   - hash:
       serializedVersion: 2
-      Hash: b48a3ae070ac5d62e44dbf0260b3156a
+      Hash: 399bc89e47b33279b562e2908dcfc21f
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: UIManager
@@ -573,4 +573,4 @@ ScriptsOnlyBuild:
   platform: 13
   scenePathNames:
   - Assets/Scenes/MainMenu.unity
-  playerPath: C:/Users/1337/Documents/Devdream/MainMenu/Builds/menuSystem.apk
+  playerPath: C:/Users/1337/Documents/Devdream/MainMenu/Builds/OnlineChecker.apk

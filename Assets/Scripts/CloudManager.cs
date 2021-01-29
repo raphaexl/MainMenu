@@ -67,25 +67,25 @@ class CloudManager : MonoBehaviour
         serverLoadedData.wingdata = new List<PlayerData>();
         serverLoadedData.reactordata = new List<PlayerData>();
         serverLoadedData.armordata = new List<PlayerData>();
-        RemoveThisAssign(serverLoadedData.aircraftdata);
-        RemoveThisAssign(serverLoadedData.canondata);
-        RemoveThisAssign(serverLoadedData.missiledata);
-        RemoveThisAssign(serverLoadedData.agmdata);
-        RemoveThisAssign(serverLoadedData.armordata);
-        RemoveThisAssign(serverLoadedData.colordata);
-        RemoveThisAssign(serverLoadedData.flagdata);
-        RemoveThisAssign(serverLoadedData.reactordata);
-        RemoveThisAssign(serverLoadedData.wingdata);
+        RemoveThisAssign(serverLoadedData.aircraftdata, "Aircraft ");
+        RemoveThisAssign(serverLoadedData.canondata, "Canon ");
+        RemoveThisAssign(serverLoadedData.missiledata, "Missile");
+        RemoveThisAssign(serverLoadedData.agmdata, "Agm");
+        RemoveThisAssign(serverLoadedData.armordata, "Armor");
+        RemoveThisAssign(serverLoadedData.colordata, "Color");
+        RemoveThisAssign(serverLoadedData.flagdata, "Flag");
+        RemoveThisAssign(serverLoadedData.reactordata, "Reactor");
+        RemoveThisAssign(serverLoadedData.wingdata, "Wing");
     }
 
-    void RemoveThisAssign(List<CloudManager.PlayerData> data)
+    void RemoveThisAssign(List<CloudManager.PlayerData> data, string name)
     {
         for (int i = 0; i < 5; i++)
         {
             PlayerData temp = new PlayerData();
             temp.ItemId = i.ToString();
             temp.unlocked = (i % 2 == 0) ? true : false;
-            temp.name = Random.Range(0, 100).ToString();
+            temp.name = name + Random.Range(0, 100).ToString();
             data.Add(temp);
         }
     }

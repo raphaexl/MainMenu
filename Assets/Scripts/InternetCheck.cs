@@ -26,8 +26,8 @@ public class InternetCheck : MonoBehaviour
 
 
     private event Action state_update_event;
-    public event Action ccc_event;
-    public event Action cch_event;
+    public event Action onConnectionCheckCompleteCallback;
+    public event Action onConnectionChangeCallback;
 
     public bool Continous { get; set; }
     [HideInInspector]
@@ -57,7 +57,7 @@ public class InternetCheck : MonoBehaviour
     protected void Start()
     {
         androidVersion = (Application.platform == RuntimePlatform.Android) ? androidSDK() : 27;
-        InvokeRepeating("ToInvoke", 1f, 2f);
+        ConnectionStateContinousCheck();
     }
 
     private string PlatformUri()
@@ -102,8 +102,8 @@ public class InternetCheck : MonoBehaviour
         {
             curentInternetState = InternetReachability.OFFLINE;
             connectionCheckState = ConnectionCheckState.COMPLETED;
-            if (ccc_event != null)
-            { ccc_event(); }
+            if (onConnectionCheckCompleteCallback != null)
+            { onConnectionCheckCompleteCallback(); }
             if (state_update_event != null)
                 state_update_event();
             return;
@@ -135,15 +135,15 @@ public class InternetCheck : MonoBehaviour
                 { curentInternetState = InternetReachability.TIMEOUT; }
                 else
                 { curentInternetState = InternetReachability.DISCONNECTED; }
-                if (ccc_event != null)
-                { ccc_event(); }
+                if (onConnectionCheckCompleteCallback != null)
+                { onConnectionCheckCompleteCallback(); }
 
             }
             else //if (webRequest.isDone)
             {
                 curentInternetState = InternetReachability.ONLINE;
-                if (ccc_event != null)
-                { ccc_event(); }
+                if (onConnectionCheckCompleteCallback != null)
+                { onConnectionCheckCompleteCallback(); }
             }
             if (state_update_event != null)
                 state_update_event();
@@ -162,9 +162,9 @@ public class InternetCheck : MonoBehaviour
             }
             else if (lastInternetState != curentInternetState)
             {
-                if (cch_event != null)
+                if (onConnectionChangeCallback != null)
                 {
-                    cch_event();
+                    onConnectionChangeCallback();
                 }
                 lastInternetState = curentInternetState;
             }
@@ -174,14 +174,13 @@ public class InternetCheck : MonoBehaviour
     void OnlineChecker()
     {
         CheckInternetReachability();
-
     }
 
     private void Initialize()
     {
         Continous = true;
-        ccc_event += OnConnectionCheckComplete;
-        cch_event += OnConnectionStatusChange;
+        onConnectionCheckCompleteCallback += OnConnectionCheckComplete;
+        onConnectionChangeCallback += OnConnectionStatusChange;
     }
 
     public void Restart()
@@ -192,8 +191,26 @@ public class InternetCheck : MonoBehaviour
     public void Stop()
     {
         Continous = false;
-        ccc_event -= OnConnectionCheckComplete;
-        cch_event -= OnConnectionStatusChange;
+        onConnectionCheckCompleteCallback -= OnConnectionCheckComplete;
+        onConnectionChangeCallback -= OnConnectionStatusChange;
+    }
+
+    public void ConnectionStateOneCheck()
+    {
+        OnlineChecker();
+    }
+
+    public void ConnectionStateContinousCheck(float repeatRate = 2f)
+    {
+        Continous = true;
+        InvokeRepeating("ToInvoke", 1f, repeatRate);
+    }
+
+    public void StopAllCallback()
+    {
+        Continous = false;
+        onConnectionCheckCompleteCallback = null;
+        onConnectionChangeCallback = null;
     }
 
     public virtual void OnConnectionCheckComplete() { isConnected = curentInternetState == InternetReachability.ONLINE;  }
@@ -201,7 +218,7 @@ public class InternetCheck : MonoBehaviour
 
     private void OnDestroy()
     {
-        ccc_event -= OnConnectionCheckComplete;
-        cch_event -= OnConnectionCheckComplete;
+        onConnectionCheckCompleteCallback -= OnConnectionCheckComplete;
+        onConnectionChangeCallback -= OnConnectionCheckComplete;
     }
 }

@@ -66,50 +66,73 @@ public struct UiUser
 
 public class UIManager : InternetCheck
 {
-    //UI Element
-
-    //Needeed Data
+    [Header("Needed Data")]
     [SerializeField] Sprite[] uiUserProfileAvatarSprites;
     [SerializeField] Sprite[] uiUserProfileRankSprites;
 
-    //UI Login State Elements
-    [SerializeField] Toggle licenceAcceptToggle;
-    [SerializeField] Toggle endUserAcceptToggle;
-    [SerializeField] Image userProfileAvatarImage;
-    [SerializeField] Text userProfileNameText;
-    [SerializeField] Image userProfileRankImage;
-    [SerializeField] Text userProfileLevelText;
-    //UI Lobby State Elements
-    [SerializeField] Image batteryLife;
-    [SerializeField] Image internetIntensity;
-
     //UI Setting State Elements
 
+    [Header("WindowPanels")]
+    [Header("Welcome      WindowPanels")]
+    [SerializeField] GameObject welcomePanel;
+    [SerializeField] GameObject welcomeDefaultPanel;
+    [Header("Internet Connection Check      WindowPanels")]
+    [SerializeField] GameObject internetCheckPanel;
+    [SerializeField] GameObject internetCheckDefaultPanel;
+    [SerializeField] GameObject noInternetWindow;
+    [Header("Login      WindowPanels")]
+    [SerializeField] GameObject loginPanel;
+    [SerializeField] GameObject loginDefaultPanel;
+    [SerializeField] GameObject languageWindow;
+    [SerializeField] Toggle licenceAcceptToggle;
+    [SerializeField] Toggle endUserAcceptToggle;
+
+    [Header("ToolsWindowPopup")]
+    [SerializeField] GameObject helpWindow;
+    [SerializeField] GameObject repairWindow;
+    [Header("LicenceWindowPopup")]
+    [SerializeField] GameObject licenceWindow;
+    [SerializeField] GameObject endUserWindow;
+    [SerializeField] GameObject noticeWindow;
+    [SerializeField] GameObject privacyPolicyWindow;
+    [SerializeField] GameObject userAgreementWindow;
+    [Header("Lobby      Window Panel")]
+    [SerializeField] GameObject lobbyPanel;
+    [SerializeField] GameObject lobbyDefaultPanel;
+    [SerializeField] Image batteryLife;
+    [SerializeField] Image internetIntensity;
+    [Header("Inventory      Window Panel")]
+    [SerializeField] GameObject inventoryPanel;
+    [SerializeField] GameObject inventoryDefaultPanel;
     //UI Inventory Elements
     [SerializeField] List<GameObject> inventoryItems;
     [SerializeField] GameObject inventoryItemDefault;
-    [SerializeField] GameObject inventoryItemOptionContainer;
-    [SerializeField] GameObject inventoryItemOption;
 
+    [SerializeField] GameObject aircraftOptionsContainer;
+    [SerializeField] GameObject canonOptionsContainer;
+    [SerializeField] GameObject missileOptionsContainer;
+    [SerializeField] GameObject agmOptionsContainer;
+    [SerializeField] GameObject colorOptionsContainer;
+    [SerializeField] GameObject flagOptionsContainer;
+    [SerializeField] GameObject reactorOptionsContainer;
+    [SerializeField] GameObject wingOptionsContainer;
+    [SerializeField] GameObject armorOptionsContainer;
     //List the option For each item
-    List<GameObject> aircraftOptions;
-    List<GameObject> canonOptions;
-    List<GameObject> missileOptions;
-    List<GameObject> agmOptions;
-    List<GameObject> colorOptions;
-    List<GameObject> flagOptions;
-    List<GameObject> reactorOptions;
-    List<GameObject> wingOptions;
-    List<GameObject> armorOptions;
-
+    [SerializeField] GameObject[] aircraftOptions;
+    [SerializeField] GameObject[] canonOptions;
+    [SerializeField] GameObject[] missileOptions;
+    [SerializeField] GameObject[] agmOptions;
+    [SerializeField] GameObject[] colorOptions;
+    [SerializeField] GameObject[] flagOptions;
+    [SerializeField] GameObject[] reactorOptions;
+    [SerializeField] GameObject[] wingOptions;
+    [SerializeField] GameObject[] armorOptions;
 
     [SerializeField] Sprite[] itemsSprites;
     [SerializeField] Sprite itemDefaultSprite;
     [SerializeField] Sprite itemSelectedSprite;
     [SerializeField] Sprite optionDefaultSprite;
     [SerializeField] Sprite optionSelectedSprite;
-
-
 
     [SerializeField] Text itemOptionTitle;
 
@@ -125,35 +148,6 @@ public class UIManager : InternetCheck
 
     GameObject currentModel;
     bool mouseOverModelView = false;
-
-
-    [Header("WindowPanels")]
-    [Header("Welcome      WindowPanels")]
-    [SerializeField] GameObject welcomePanel;
-    [SerializeField] GameObject welcomeDefaultPanel;
-    [Header("Internet Connection Check      WindowPanels")]
-    [SerializeField] GameObject internetCheckPanel;
-    [SerializeField] GameObject internetCheckDefaultPanel;
-    [SerializeField] GameObject noInternetWindow;
-    [Header("Login      WindowPanels")]
-    [SerializeField] GameObject loginPanel;
-    [SerializeField] GameObject loginDefaultPanel;
-    [SerializeField] GameObject languageWindow;
-    [Header("ToolsWindowPopup")]
-    [SerializeField] GameObject helpWindow;
-    [SerializeField] GameObject repairWindow;
-    [Header("LicenceWindowPopup")]
-    [SerializeField] GameObject licenceWindow;
-    [SerializeField] GameObject endUserWindow;
-    [SerializeField] GameObject noticeWindow;
-    [SerializeField] GameObject privacyPolicyWindow;
-    [SerializeField] GameObject userAgreementWindow;
-    [Header("Lobby      Window Panel")]
-    [SerializeField] GameObject lobbyPanel;
-    [SerializeField] GameObject lobbyDefaultPanel;
-    [Header("Inventory      Window Panel")]
-    [SerializeField] GameObject inventoryPanel;
-    [SerializeField] GameObject inventoryDefaultPanel;
     [Header("Character Choice      WindowPopup")]
     [SerializeField] GameObject characterChoicePanel;
     [Header("Settings      Window Panel")]
@@ -206,9 +200,7 @@ public class UIManager : InternetCheck
     Vector3[] controlsAccJoysItemsScales;
     float[] controlsAccJoysItemsTransparency;
     bool controlAccelerometerState;
-
-    
-
+    bool mouseOverAccJoysItems = false;
 
     [SerializeField] GameObject audioWindow;
     [SerializeField] Slider musicVolumeSlider;
@@ -234,10 +226,15 @@ public class UIManager : InternetCheck
     [SerializeField] GameObject profilePanel;
     //  [SerializeField] GameObject playerProfile;
     //  [SerializeField] GameObject playerCurrency;
+    [SerializeField] Image userProfileAvatarImage;
+    [SerializeField] Text userProfileNameText;
+    [SerializeField] Image userProfileRankImage;
+    [SerializeField] Text userProfileLevelText;
 
     [Header("Wheel      Window Elements")]
     [SerializeField] GameObject spinWheelGO;
-    int nbSpinItems;
+    private int NB_SPIN_ITEMS = 12;
+    private int spinWheelResult = 0;
 
     [Header("Gift      Window Elements")]
     [SerializeField] GameObject giftWindowPanel;
@@ -282,17 +279,14 @@ public class UIManager : InternetCheck
         UpdateUI();
         InvokeRepeating("BatteryLifeUpdate", 1f, 60f);//60s
         InvokeRepeating("InternetIntensityCalc", 1f, 2f);
-
-        nbSpinItems = 12;
-
-        //PlayerPrefs.DeleteAll();
+       //PlayerPrefs.DeleteAll();
         UpdateItemState();
+        currentModel = aircraftModels[0];
     }
 
     private void Start()
     {
         base.Start();
-        LoadPlayerItemsData();
     }
 
    
@@ -312,7 +306,7 @@ public class UIManager : InternetCheck
     public override void OnConnectionStatusChange()
     {
         base.OnConnectionStatusChange();
-        Debug.Log("Connection change called in UI Manager");
+       // Debug.Log("Connection change called in UI Manager");
     }
     #endregion
 
@@ -388,175 +382,15 @@ public class UIManager : InternetCheck
         userProfileLevelText.text = CloudManager.CM.serverLoadedData.playerstatistics.playerlevel.ToString();
         userProfileRankImage.sprite = uiUserProfileRankSprites[0];
     }
-    #endregion
-
-
-    #region Load Inventroy Data
-
-   
-    public void GetInventoryItem(int index)
+    
+    void PlayerProfileSetup()
     {
-        List<CloudManager.PlayerData> itemdata;
-
-        if (index == 0)
-            itemdata = CloudManager.CM.serverLoadedData.canondata;
-        else if (index == 1)
-            itemdata = CloudManager.CM.serverLoadedData.agmdata;
-        else if (index == 2)
-            itemdata = CloudManager.CM.serverLoadedData.armordata;
-        else
-            itemdata = CloudManager.CM.serverLoadedData.flagdata;
-        foreach (CloudManager.PlayerData option in itemdata)
-        {
-            var optionButton = Instantiate(inventoryItemOption, inventoryItemOptionContainer.transform);
-            {
-                optionButton.name = option.ItemId;
-                optionButton.transform.GetChild(0).GetComponent<Text>().text = option.name;
-                optionButton.GetComponent<Button>().onClick.AddListener(OnInventoryItemOptionBtnClicked);
-            }
-        }
+        //SetUserProfile();
 
     }
-
-    private void LoadPlayerItemsData()
-   {
-        int optionsCount;
-
-
-
-        aircraftOptions = new List<GameObject>();
-        canonOptions = new List<GameObject>();
-        missileOptions = new List<GameObject>();
-        agmOptions = new List<GameObject>();
-        colorOptions = new List<GameObject>();
-        armorOptions = new List<GameObject>();
-        reactorOptions = new List<GameObject>();
-        flagOptions = new List<GameObject>();
-        wingOptions = new List<GameObject>();
-        //Load Aircraft Item and it's Options
-        optionsCount = CloudManager.CM.serverLoadedData.aircraftdata.Count;
-        for (int i = 0; i < optionsCount; i++)
-        {
-            var optionButton = Instantiate(inventoryItemOption, inventoryItemOptionContainer.transform);
-            {
-                optionButton.name = i.ToString();
-                optionButton.transform.GetChild(0).GetComponent<Text>().text = CloudManager.CM.serverLoadedData.aircraftdata[i].name;
-                optionButton.GetComponent<Button>().onClick.AddListener(OnInventoryItemOptionBtnClicked);
-            }
-            aircraftOptions.Add(optionButton);
-        }
-        //Load Canon Item and it's Options
-        optionsCount = CloudManager.CM.serverLoadedData.canondata.Count;
-        for (int i = 0; i < optionsCount; i++)
-        {
-            var optionButton = Instantiate(inventoryItemOption, inventoryItemOptionContainer.transform);
-            {
-                optionButton.name = i.ToString();
-                optionButton.transform.GetChild(0).GetComponent<Text>().text = CloudManager.CM.serverLoadedData.canondata[i].name;
-                optionButton.GetComponent<Button>().onClick.AddListener(OnInventoryItemOptionBtnClicked);
-            }
-            canonOptions.Add(optionButton);
-        }
-        //Load Missile Item and it's Options
-        optionsCount = CloudManager.CM.serverLoadedData.missiledata.Count;
-        for (int i = 0; i < optionsCount; i++)
-        {
-            var optionButton = Instantiate(inventoryItemOption, inventoryItemOptionContainer.transform);
-            {
-                optionButton.name = i.ToString();
-                optionButton.transform.GetChild(0).GetComponent<Text>().text = CloudManager.CM.serverLoadedData.missiledata[i].name;
-                optionButton.GetComponent<Button>().onClick.AddListener(OnInventoryItemOptionBtnClicked);
-            }
-            missileOptions.Add(optionButton);
-        }
-        //Load Agm Item and it's Options
-        optionsCount = CloudManager.CM.serverLoadedData.agmdata.Count;
-        for (int i = 0; i < optionsCount; i++)
-        {
-            var optionButton = Instantiate(inventoryItemOption, inventoryItemOptionContainer.transform);
-            {
-                optionButton.name = i.ToString();
-                optionButton.transform.GetChild(0).GetComponent<Text>().text = CloudManager.CM.serverLoadedData.agmdata[i].name;
-                optionButton.GetComponent<Button>().onClick.AddListener(OnInventoryItemOptionBtnClicked);
-            }
-            agmOptions.Add(optionButton);
-        }
-        //Load Color Item and it's Options
-        optionsCount = CloudManager.CM.serverLoadedData.colordata.Count;
-        for (int i = 0; i < optionsCount; i++)
-        {
-            var optionButton = Instantiate(inventoryItemOption, inventoryItemOptionContainer.transform);
-            {
-                optionButton.name = i.ToString();
-                optionButton.transform.GetChild(0).GetComponent<Text>().text = CloudManager.CM.serverLoadedData.colordata[i].name;
-                optionButton.GetComponent<Button>().onClick.AddListener(OnInventoryItemOptionBtnClicked);
-            }
-            canonOptions.Add(optionButton);
-        }
-        //Load Flag Item and it's Options
-        optionsCount = CloudManager.CM.serverLoadedData.flagdata.Count;
-        for (int i = 0; i < optionsCount; i++)
-        {
-            var optionButton = Instantiate(inventoryItemOption, inventoryItemOptionContainer.transform);
-            {
-                optionButton.name = i.ToString();
-                optionButton.transform.GetChild(0).GetComponent<Text>().text = CloudManager.CM.serverLoadedData.flagdata[i].name;
-                optionButton.GetComponent<Button>().onClick.AddListener(OnInventoryItemOptionBtnClicked);
-            }
-            flagOptions.Add(optionButton);
-        }
-        //Load Reactor Item and it's Options
-        optionsCount = CloudManager.CM.serverLoadedData.reactordata.Count;
-        for (int i = 0; i < optionsCount; i++)
-        {
-            var optionButton = Instantiate(inventoryItemOption, inventoryItemOptionContainer.transform);
-            {
-                optionButton.name = i.ToString();
-                optionButton.transform.GetChild(0).GetComponent<Text>().text = CloudManager.CM.serverLoadedData.reactordata[i].name;
-                optionButton.GetComponent<Button>().onClick.AddListener(OnInventoryItemOptionBtnClicked);
-            }
-            reactorOptions.Add(optionButton);
-        }
-        //Load Wing Item and it's Options
-        optionsCount = CloudManager.CM.serverLoadedData.wingdata.Count;
-        for (int i = 0; i < optionsCount; i++)
-        {
-            var optionButton = Instantiate(inventoryItemOption, inventoryItemOptionContainer.transform);
-            {
-                optionButton.name = i.ToString();
-                optionButton.transform.GetChild(0).GetComponent<Text>().text = CloudManager.CM.serverLoadedData.wingdata[i].name;
-                optionButton.GetComponent<Button>().onClick.AddListener(OnInventoryItemOptionBtnClicked);
-            }
-            wingOptions.Add(optionButton);
-        }
-        //Load Armor Item and it's Options
-        optionsCount = CloudManager.CM.serverLoadedData.armordata.Count;
-        for (int i = 0; i < optionsCount; i++)
-        {
-            var optionButton = Instantiate(inventoryItemOption, inventoryItemOptionContainer.transform);
-            {
-                optionButton.name = i.ToString();
-                optionButton.transform.GetChild(0).GetComponent<Text>().text = CloudManager.CM.serverLoadedData.armordata[i].name;
-                optionButton.GetComponent<Button>().onClick.AddListener(OnInventoryItemOptionBtnClicked);
-            }
-            armorOptions.Add(optionButton);
-        }
-
-        inventoryItemDefault.GetComponent<Button>().image.sprite = itemSelectedSprite;
-        SetInventorySelectedItem(0);
-        inventoryItemOption.SetActive(false);
-        //For testing we need Reset PlayerPrefs 
-        //PlayerPrefs.DeleteAll();
-        //Remove the line above !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        uiUser.currentItemIndex = 0;
-        uiUser.currentOptionIndex = 0;
-        int selectedOption = PlayerPrefs.GetInt("aircraft", 0);
-        aircraftOptions[selectedOption].GetComponent<Button>().image.sprite = optionSelectedSprite;
-        SetInventorySelectedItemOption(0);
-    }
-
 
     #endregion
+
     #region UpdateUI function
     public void UpdateUI()
     {
@@ -601,6 +435,7 @@ public class UIManager : InternetCheck
                 break;
             case UIType.LobbyUI:
                 {
+                    PlayerProfileSetup();
                     lobbyPanel.SetActive(true);
                     lobbyDefaultPanel.SetActive(true);
                     profilePanel.SetActive(true);
@@ -781,6 +616,7 @@ public class UIManager : InternetCheck
     public void OnLobbyInventroryBtnPressed()
     {
         uiUser.uiState = UIType.InventoryUI;
+        LoadPlayerItemsData();
         UpdateUI();
     }
 
@@ -1128,17 +964,25 @@ public class UIManager : InternetCheck
                 controlsAccJoysItems[i].transform.rotation = controlsAccJoysItemsRotations[i];
                 Color color = controlsAccJoysItems[i].GetComponent<Image>().color;
                 float alpha = controlsAccJoysItemsTransparency[i];
+                controlsAccJoysItems[i].GetComponent<Image>().color = new Color(color.r, color.g, color.b, alpha);
             }
             OnControlAccJoysItemSelectedBtn(0);
         }
+    }
+    
+    public void OnMouseOverAccJoysItems(bool value)
+    {
+        Debug.Log("Ha" + value);
+        mouseOverAccJoysItems = value;
     }
 
     public void OnControlDraggingAccJoysItems(BaseEventData bed)
     {
         PointerEventData ped = bed as PointerEventData;
 
-        if (!OnScalingControlAccJoysItems())
+        if (!OnScalingControlAccJoysItems() && controlsAccJoysWindow.GetComponent<RectTransform>().rect.Overlaps(controlsAccJoysSelected.GetComponent<RectTransform>().rect))
         {
+            Debug.Log("Hey");
             controlsAccJoysSelected.transform.position = ped.position;
         }
     }
@@ -1206,7 +1050,7 @@ public class UIManager : InternetCheck
         }
 
         LoadAccJoysItemsSettings();
-        if (!controlAccelerometerState)
+        if (controlAccelerometerState)
         {
             controlsAccJoysItems[0].SetActive(false);
             controlsAccJoysSelected = controlsAccJoysItems[1];
@@ -1387,21 +1231,61 @@ public class UIManager : InternetCheck
     #endregion
 
     #region Inventory Buttons
+    #region Load Inventroy Data
 
-    private void OnInventorySelectReset()
+    void InventoryItemOptionSetText(GameObject[] optionGO, List<CloudManager.PlayerData> data)
     {
-        aircraftOptions.ForEach((go) => { go.SetActive(false); });
-        canonOptions.ForEach((go) => { go.SetActive(false); });
-        missileOptions.ForEach((go) => { go.SetActive(false); });
-        agmOptions.ForEach((go) => { go.SetActive(false); });
-        colorOptions.ForEach((go) => { go.SetActive(false); });
-        flagOptions.ForEach((go) => { go.SetActive(false); });
-        reactorOptions.ForEach((go) => { go.SetActive(false); });
-        wingOptions.ForEach((go) => { go.SetActive(false); });
-        armorOptions.ForEach((go) => { go.SetActive(false); });
+        int optionsCount;
+
+        optionsCount = data.Count;
+        for (int i = 0; i < optionsCount; i++)
+        {
+            optionGO[i].transform.GetChild(0).GetComponent<Text>().text = data[i].name;
+        }
     }
 
-    private void OnInventorySelectUpdate(List<CloudManager.PlayerData> itemOptions, List<GameObject> optionsGO)
+    private void LoadPlayerItemsData()
+    {
+        InventoryItemOptionSetText(aircraftOptions, CloudManager.CM.serverLoadedData.aircraftdata);
+        InventoryItemOptionSetText(canonOptions, CloudManager.CM.serverLoadedData.canondata);
+        InventoryItemOptionSetText(missileOptions, CloudManager.CM.serverLoadedData.missiledata);
+        InventoryItemOptionSetText(agmOptions, CloudManager.CM.serverLoadedData.agmdata);
+        InventoryItemOptionSetText(colorOptions, CloudManager.CM.serverLoadedData.colordata);
+        InventoryItemOptionSetText(flagOptions, CloudManager.CM.serverLoadedData.flagdata);
+        InventoryItemOptionSetText(reactorOptions, CloudManager.CM.serverLoadedData.reactordata);
+        InventoryItemOptionSetText(wingOptions, CloudManager.CM.serverLoadedData.wingdata);
+        InventoryItemOptionSetText(armorOptions, CloudManager.CM.serverLoadedData.armordata);
+
+        inventoryItemDefault.GetComponent<Button>().image.sprite = itemSelectedSprite;
+        SetInventorySelectedItem(0);
+
+        //For testing we need Reset PlayerPrefs 
+        //PlayerPrefs.DeleteAll();
+        //Remove the line above !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        uiUser.currentItemIndex = 0;
+        uiUser.currentOptionIndex = 0;
+        int selectedOption = PlayerPrefs.GetInt("aircraft", 0);
+        aircraftOptions[selectedOption].GetComponent<Button>().image.sprite = optionSelectedSprite;
+        SetInventorySelectedItemOption(selectedOption);
+    }
+
+
+    #endregion
+    private void OnInventorySelectReset()
+    {
+        //This should be sufficient
+        aircraftOptionsContainer.SetActive(false);
+        canonOptionsContainer.SetActive(false);
+        missileOptionsContainer.SetActive(false);
+        agmOptionsContainer.SetActive(false);
+        colorOptionsContainer.SetActive(false);
+        flagOptionsContainer.SetActive(false);
+        reactorOptionsContainer.SetActive(false);
+        wingOptionsContainer.SetActive(false);
+        armorOptionsContainer.SetActive(false);
+    }
+
+    private void OnInventorySelectUpdate(List<CloudManager.PlayerData> itemOptions, GameObject[] optionsGO)
     {
         int optionsCount = 0;
         bool selectedOptionSet = false;
@@ -1427,24 +1311,27 @@ public class UIManager : InternetCheck
 
     private void SetInventorySelectedItem(int itemIndex)
     {
-       // OnInventorySelectReset();
+        OnInventorySelectReset();
         switch (itemIndex)
         {
             case 0:
                 {
                     uiUser.currentOptionIndex = PlayerPrefs.GetInt("aircraft", 0);
+                    aircraftOptionsContainer.SetActive(true);
                     OnInventorySelectUpdate(CloudManager.CM.serverLoadedData.aircraftdata, aircraftOptions);
                 }
                 break;
             case 1:
                 {
                     uiUser.currentOptionIndex = PlayerPrefs.GetInt("canon", 0);
+                    canonOptionsContainer.SetActive(true);
                     OnInventorySelectUpdate(CloudManager.CM.serverLoadedData.canondata, canonOptions);
                 }
                 break;
             case 2:
                 {
                     uiUser.currentOptionIndex = PlayerPrefs.GetInt("missile", 0);
+                    missileOptionsContainer.SetActive(true);
                     OnInventorySelectUpdate(CloudManager.CM.serverLoadedData.missiledata, missileOptions);
                 }
                 break;
@@ -1452,47 +1339,53 @@ public class UIManager : InternetCheck
             case 3:
                 {
                     uiUser.currentOptionIndex = PlayerPrefs.GetInt("agm", 0);
+                    agmOptionsContainer.SetActive(true);
                     OnInventorySelectUpdate(CloudManager.CM.serverLoadedData.agmdata, agmOptions);
                 }
                 break;
             case 4:
                 {
                     uiUser.currentOptionIndex = PlayerPrefs.GetInt("color", 0);
+                    colorOptionsContainer.SetActive(true);
                     OnInventorySelectUpdate(CloudManager.CM.serverLoadedData.colordata, colorOptions);
                 }
                 break;
             case 5:
                 {
                     uiUser.currentOptionIndex = PlayerPrefs.GetInt("flag", 0);
+                    flagOptionsContainer.SetActive(true);
                     OnInventorySelectUpdate(CloudManager.CM.serverLoadedData.flagdata, flagOptions);
                 }
                 break;
             case 6:
                 {
                     uiUser.currentOptionIndex = PlayerPrefs.GetInt("reactor", 0);
+                    reactorOptionsContainer.SetActive(true);
                     OnInventorySelectUpdate(CloudManager.CM.serverLoadedData.reactordata, reactorOptions);
                 }
                 break;
             case 7:
                 {
                     uiUser.currentOptionIndex = PlayerPrefs.GetInt("wing", 0);
+                    wingOptionsContainer.SetActive(true);
                     OnInventorySelectUpdate(CloudManager.CM.serverLoadedData.wingdata, wingOptions);
                 }
                 break;
             case 8:
                 {
                     uiUser.currentOptionIndex = PlayerPrefs.GetInt("armor", 0);
+                    armorOptionsContainer.SetActive(true);
                     OnInventorySelectUpdate(CloudManager.CM.serverLoadedData.armordata, armorOptions);
                 }
                 break;
             default:break;
         }
-        SetInventorySelectedItemOption(0);
+       SetInventorySelectedItemOption(uiUser.currentOptionIndex);
     }
 
-    private void SetAndSaveItemSelectedOption(List<GameObject> optionsGOS, string keyName, int optionIndex)
+    private void SetAndSaveItemSelectedOption(GameObject[] optionsGOS, string keyName, int optionIndex)
     {
-        optionsGOS.ForEach((itemOption) => { itemOption.GetComponent<Button>().image.sprite = optionDefaultSprite; });
+        Array.ForEach(optionsGOS, (itemOption) => { itemOption.GetComponent<Button>().image.sprite = optionDefaultSprite; });
         optionsGOS[optionIndex].GetComponent<Button>().image.sprite = optionSelectedSprite;
         PlayerPrefs.SetInt(keyName, optionIndex);
     }
@@ -1513,6 +1406,7 @@ public class UIManager : InternetCheck
             case 0:
                 {
                     currentModel = aircraftModels[optionIndex];
+                  
                     SetAndSaveItemSelectedOption(aircraftOptions, "aircraft", optionIndex);
                 }
                 break;
@@ -1577,20 +1471,60 @@ public class UIManager : InternetCheck
         SetInventorySelectedItem(index);
     }
 
-    public void OnInventoryItemOptionBtnClicked()
+    public void OnInventoryItemAircraftOptionBtnClicked(int index)
     {
-
-        var name = EventSystem.current.currentSelectedGameObject.name;
-        // Debug.LogFormat("Button : {0}", name);
-        itemOptionTitle.text = "Item " + name;
-        int index = int.Parse(name);
         SetInventorySelectedItemOption(index);
     }
 
+    public void OnInventoryItemCanonOptionBtnClicked(int index)
+    {
+        SetInventorySelectedItemOption(index);
+    }
+
+    public void OnInventoryItemMissileOptionBtnClicked(int index)
+    {
+        SetInventorySelectedItemOption(index);
+    }
+
+    public void OnInventoryItemAgmOptionBtnClicked(int index)
+    {
+        SetInventorySelectedItemOption(index);
+    }
+
+    public void OnInventoryItemColorOptionBtnClicked(int index)
+    {
+        SetInventorySelectedItemOption(index);
+    }
+
+    public void OnInventoryItemFlagOptionBtnClicked(int index)
+    {
+        SetInventorySelectedItemOption(index);
+    }
+
+    public void OnInventoryItemReactorOptionBtnClicked(int index)
+    {
+        SetInventorySelectedItemOption(index);
+    }
+
+    public void OnInventoryItemWingOptionBtnClicked(int index)
+    {
+        SetInventorySelectedItemOption(index);
+    }
+
+    public void OnInventoryItemArmorOptionBtnClicked(int index)
+    {
+        SetInventorySelectedItemOption(index);
+    }
 
     public void OnMouseOverModelView(bool value)
     {
         mouseOverModelView = value;
+    }
+
+    public void OnInventoryCloseBtnClicked()
+    {
+        inventoryDefaultPanel.SetActive(false);
+        uiUser.uiState = UIType.LobbyUI;
     }
     #endregion
 
@@ -1624,6 +1558,7 @@ public class UIManager : InternetCheck
         RotAngle.x = Mathf.Clamp(RotAngle.x, -179f, 179f);
         RotAngle.y = Mathf.Clamp(RotAngle.y, -90f, 90f);
         currentModel.transform.rotation = Quaternion.Euler(RotAngle.y, RotAngle.x, 0);
+ 
     }
 
 
@@ -1684,40 +1619,13 @@ void Scale(float delta, float speed)
     float spinSpeed = 2000f;
     bool spinFinished = false;
     float angleSpin = 0;
-    int result = 0;
 
     IEnumerator SpinRotator(Action method)
     {
-        float setTime = UnityEngine.Random.Range(0.5f, 0.8f); 
-    //    float setTime = UnityEngine.Random.Range(0.1f, 0.2f); 
-        float elapsedTime = 0;
+        spinWheelResult = UnityEngine.Random.Range(1, NB_SPIN_ITEMS);
+        float rotAngle = (float)spinWheelResult * 30  + (UnityEngine.Random.Range(1, 4)) * 360;
         float currentSpinSpeed = 0f;
 
-        spinFinished = false;
-        currentSpinSpeed = spinSpeed;
-        while (elapsedTime < setTime)
-        {
-            if (elapsedTime > .5f * setTime) 
-            {currentSpinSpeed =  spinSpeed * .5f;}
-            if (elapsedTime > .75f * setTime)
-            {currentSpinSpeed = spinSpeed * .25f;}
-            if (elapsedTime > .85f * setTime)
-            { currentSpinSpeed = spinSpeed * .125f;}
-            angleSpin +=  currentSpinSpeed * Time.deltaTime;
-            spinWheelGO.transform.rotation = Quaternion.Euler(0, 0, angleSpin);
-            elapsedTime += Time.deltaTime;
-            yield return new WaitForSeconds(0.1f);
-        }
-        spinFinished = true;
-        method();
-    }
-
-    IEnumerator SpinRotatorA(Action method)
-    {
-        result = UnityEngine.Random.Range(1, 12);
-        float rotAngle = (float)result * 30  + (UnityEngine.Random.Range(1, 4)) * 360;
-        float currentSpinSpeed = 0f;
-        Debug.Log("Rotation is " + rotAngle);
         angleSpin = 0;
         currentSpinSpeed = spinSpeed;
         while (angleSpin < rotAngle)
@@ -1736,17 +1644,16 @@ void Scale(float delta, float speed)
         method();
     }
 
-    int SpinWheel()
+    int  SpinWheel()
     {
      
-        Action printSomthing = () =>
+        Action OnSpinWheelComplete = () =>
         {
-           // DisplayGift();
-            Debug.LogFormat("Choosen index {0}", 1 + result);
+            Debug.LogFormat("Choosen index {0}", 1 + spinWheelResult);
         };
 
-        StartCoroutine("SpinRotatorA", printSomthing);
-        return result;
+        StartCoroutine("SpinRotator", OnSpinWheelComplete);
+        return spinWheelResult;
     }
 
     #endregion
@@ -1805,11 +1712,6 @@ void Scale(float delta, float speed)
 
         for (int i = giftItems.Length - 1; i >= 0; i--)
         {
-            /*  if (giftItems[i].state == GiftItemState.LOCKED)
-              {giftItems[i].lockedGO.SetActive(true);}
-              else
-              {giftItems[i].lockedGO.SetActive(false);}*/
-
             if (giftItems[i].state == GiftItemState.LOCKED)
             { giftItems[i].lockedGO.GetComponent<Text>().text = "LOCKED"; }
             else if (giftItems[i].state == GiftItemState.UNLOCKED)
@@ -1863,6 +1765,9 @@ void Scale(float delta, float speed)
             {
                 OnScalingControlAccJoysItems();
             }
+        }else if (uiUser.uiState == UIType.InventoryUI)
+        {
+            UpdateEvents();
         }
     }
 
